@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block style %}
+.delete-emi-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.page-title {
+    color: #f44336;
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.confirmation-text {
+    color: #f0f0f0;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* EMI Details Styling */
+.emi-details {
+    margin-bottom: 30px;
+    background-color: #2b2b2b;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: left;
+    font-size: 16px;
+    color: #f0f0f0;
+}
+
+.emi-details p {
+    margin: 10px 0;
+}
+
+/* Form Actions */
+.delete-form {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.delete-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.delete-button:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+}
+
+.cancel-link {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #00bcd4;
+    text-decoration: none;
+    border: 1px solid #00bcd4;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.cancel-link:hover {
+    background-color: #00bcd4;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .delete-emi-container {
+        padding: 15px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    .confirmation-text {
+        font-size: 16px;
+    }
+
+    .delete-form {
+        flex-direction: column;
+    }
+
+    .delete-button,
+    .cancel-link {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+{% endblock  %}
+{% block content %}
+<div class="delete-emi-container">
+    <h2 class="page-title">Delete EMI</h2>
+    <p class="confirmation-text">Are you sure you want to delete this EMI?</p>
+    
+    <div class="emi-details">
+        <p><strong>Description:</strong> {{ emi.description }}</p>
+        <p><strong>Amount:</strong> {{ emi.amount }}</p>
+        <p><strong>Next Payment Date:</strong> {{ emi.next_payment_date }}</p>
+    </div>
+
+    <form method="POST" class="delete-form">
+        {% csrf_token %}
+        <button type="submit" class="delete-button">Yes, Delete</button>
+        <a href="{% url 'view_emis' %}" class="cancel-link">Cancel</a>
+    </form>
+</div>
+
+
+
+{% endblock %}

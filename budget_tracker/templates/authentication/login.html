@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Login - Budget Tracker
+{% endblock %}
+
+{% block style %}
+  .login-body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #1a1a1a; 
+    color: #f0f0f0; 
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+    
+  }
+
+  .login-container {
+    background-color: #121212; /* Darker Background for Form */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto; /* Center the form horizontally */
+  }
+
+  h1 {
+    font-size: 28px;
+    color: #00bcd4; /* Electric Blue */
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  label {
+    font-size: 16px;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  input[type="text"], input[type="email"], input[type="password"], input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 2px solid #333;
+    background-color: #2a2a2a; /* Dark Input Fields */
+    color: #f0f0f0; /* Light Text */
+    font-size: 16px;
+  }
+
+  input[type="submit"] {
+    background-color: #00bcd4; /* Electric Blue Submit Button */
+    color: #000;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  input[type="submit"]:hover {
+    background-color: #ff9800; /* Orange Hover Effect */
+  }
+
+  .login-footer {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .login-footer a {
+    color: #00bcd4; /* Electric Blue Link */
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease;
+  }
+
+  .login-footer a:hover {
+    color: #ff9800; /* Orange Hover Effect */
+  }
+
+  .error-message {
+    color: #ff9800; /* Orange Error Text */
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+  }
+{% endblock %}
+
+{% block content %}
+<div class="login-body">
+  <div class="login-container">
+    <h1>Login to Your Account</h1>
+    <form action="{% url 'login' %}" method="POST">
+      {% csrf_token %}
+      
+      <!-- Username or Email -->
+      <label for="emai">Email</label>
+      <input type="text" id="email" name="email" placeholder="Enter your username or email" required>
+      {% if form.username.errors %}
+        <div class="error-message">
+          {% for error in form.username.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Password -->
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" required>
+      {% if form.password.errors %}
+        <div class="error-message">
+          {% for error in form.password.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Submit Button -->
+      <input type="submit" value="Login">
+
+      <div class="login-footer">
+        <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+      </div>
+
+      <!-- General Form Errors -->
+      {% if form.errors %}
+        <div class="error-message">
+          <ul>
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<script>
+  if (window.self !== window.top) {
+      // Redirect the parent window to the login page
+      window.top.location.href = window.location.href;
+  }
+</script>
+{% endblock %}

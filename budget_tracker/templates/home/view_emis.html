@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}View EMIs - Budget Tracker{% endblock %}
+
+{% block style %}
+
+.emi-container {
+    max-width: 90%;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+.emi-heading {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #00e676;
+    text-align: center;
+}
+
+.emi-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    color: #f0f0f0;
+}
+
+.emi-table thead {
+    background-color: #333;
+}
+
+.emi-table th, .emi-table td {
+    padding: 15px;
+    border: 1px solid #444;
+    font-size: 16px;
+}
+
+.emi-table th {
+    font-weight: 600;
+    color: #00bcd4;
+    text-transform: uppercase;
+}
+
+.emi-table tr:nth-child(even) {
+    background-color: #2a2a2a;
+}
+
+.emi-table tr:hover {
+    background-color: #3a3a3a;
+}
+
+.no-emi {
+    text-align: center;
+    color: #ff9800;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 20px;
+}
+
+.action-link {
+    color: #00bcd4;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.action-link:hover {
+    color: #ff9800;
+}
+
+.edit-link {
+    color: #4caf50;
+}
+
+.edit-link:hover {
+    color: #81c784;
+}
+
+.delete-link {
+    color: #f44336;
+}
+
+.delete-link:hover {
+    color: #e57373;
+}
+
+.add-emi-btn {
+    display: inline-block;
+    padding: 8px 16px; 
+    background-color: #00bcd4;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 40px; 
+    margin-bottom:20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: 2px solid #00bcd4; 
+}
+
+.add-emi-btn:hover {
+    background-color: #00e676; 
+    border-color: #00e676;
+    transform: scale(1.05);
+}
+
+.add-emi-btn:focus {
+    outline: none;
+    box-shadow: 0 0 5px 2px #00bcd4;
+}
+
+{% endblock %}
+
+{% block content %}
+<div class="emi-container">
+    <h2 class="emi-heading">Your EMIs</h2>
+    <table class="emi-table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Next Payment Date</th>
+                <th>Frequency</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for emi in emis %}
+            <tr>
+                <td>{{ emi.description }}</td>
+                <td>{{ emi.amount }}</td>
+                <td>{{ emi.start_date }}</td>
+                <td>{{ emi.end_date }}</td>
+                <td>{{ emi.next_payment_date }}</td>
+                <td>{{ emi.frequency }}</td>
+                <td>
+                    <a href="{% url 'edit_emi' emi.id %}" class="action-link edit-link">Edit</a> |
+                    <a href="{% url 'delete_emi' emi.id %}" class="action-link delete-link">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="no-emi">No EMIs found.</td>
+            </tr>
+            <tr>
+                <td colspan="7" class="no-emi">
+                    <!-- Add EMI Button only when no EMIs are found -->
+                    <a href="{% url 'add_emi' %}" class="add-emi-btn">Add EMI</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

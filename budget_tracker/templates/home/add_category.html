@@ -1,0 +1,149 @@
+
+<html>
+    <head>
+        <title>Add Category - Budget Tracker</title>
+    </head>
+    
+<style>
+.page-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #00bcd4; /* Electric blue for headings */
+}
+
+.alert-container {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.form-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: #212121; /* Dark background */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+form label {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: #a8e6cf; /* Light text color for labels */
+}
+
+form input, form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #333; /* Dark border */
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: #424242; /* Dark input background */
+    color: #a8e6cf; /* Light text color inside input */
+}
+
+form input:focus, form select:focus {
+    border-color: #00bcd4; /* Electric blue border on focus */
+    outline: none;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #00bcd4; /* Electric blue button */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+    background-color: #00e676; /* Electric green hover effect */
+}
+
+
+.messages-container {
+    margin: 20px auto;
+    max-width: 80%;
+    text-align: center;
+}
+
+.messages {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.messages .message {
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.messages .message.success {
+    background-color: #4caf50;
+    color: white;
+}
+
+.messages .message.error {
+    background-color: #f44336;
+    color: white;
+}
+
+.messages .message.warning {
+    background-color: #ff9800;
+    color: white;
+}
+
+.messages .message.info {
+    background-color: #2196f3;
+    color: white;
+}
+</style>
+
+
+<body>
+
+
+    <div class="messages-container">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="message {{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+<div class="form-container">
+    <form method="post" action="{% url 'category' %}">
+        {% csrf_token %}
+        
+        <label for="name">Category Name:</label>
+        <input type="text" name="name" required><br>
+
+        <label for="category_type">Category Type:</label>
+        <select name="category_type" required>
+            <option value="">--Select Category Type--</option>
+            <option value="INCOME">Income</option>
+            <option value="EXPENSE">Expense</option>
+        </select><br>
+
+        <button type="submit" class="submit-button">Save Category</button>
+    </form>
+</div>
+
+</body>
+</html>

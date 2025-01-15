@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Budgets - Budget Tracker{% endblock %}
+
+{% block style %}
+.manage-budget-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 25px;
+    background-color: #222;
+    border-radius: 10px;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.manage-budget-container h2 {
+    color: #ffd54f;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.budget-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.budget-table th, .budget-table td {
+    border: 1px solid #ffd54f;
+    padding: 12px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.budget-table th {
+    background-color: #333;
+    color: #ffd54f;
+    font-weight: bold;
+}
+
+.budget-table tr:nth-child(even) {
+    background-color: #444;
+}
+
+.budget-table tr:nth-child(odd) {
+    background-color: #333;
+}
+
+.budget-action-buttons button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+    transition: background-color 0.3s, transform 0.3s ease;
+}
+
+.budget-action-buttons .edit {
+    background-color: #ffd54f;
+    color: #000;
+}
+
+.budget-action-buttons .delete {
+    background-color: #ff6b6b;
+    color: #fff;
+}
+
+.budget-action-buttons button:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-window {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    color: #fff;
+    display: none;
+}
+
+.popup-header {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffd54f;
+    margin-bottom: 20px;
+}
+
+.popup-close {
+    font-size: 30px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.popup-content input {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border: 1px solid #ffd54f;
+    color: #000;
+}
+
+.popup-content button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffd54f;
+    cursor: pointer;
+    color: #000;
+    font-size: 16px;
+}
+
+.popup-content button:hover {
+    background-color: #e6c200;
+}
+
+{% endblock %}
+
+{% block content %}
+<div class="manage-budget-container">
+    <h2>Manage Your Budgets</h2>
+
+    <!-- Budgets Table -->
+    <table class="budget-table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Budget Limit</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for budget in budgets %}
+                <tr>
+                    <td>{{ budget.category.name|default:"Overall" }}</td>
+                    <td>₹{{ budget.limit }}</td>
+                    <td>{{ budget.start_date }}</td>
+                    <td>{{ budget.end_date }}</td>
+                    <td class="budget-action-buttons">
+                        <!-- Edit Button -->
+                        <button class="edit" title="Edit" 
+                            onclick="openPopup('{% url 'edit_budget' budget.id %}', 'Update Budget', '#ffd54f')">
+                            <i class="fa fa-edit"></i>
+                        </button>
+
+                        <!-- Delete Button -->
+                        <form method="POST" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="delete_budget" value="{{ budget.id }}">
+                            <button type="submit" class="delete" title="Delete">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pop-up for Editing Budget -->
+<div class="popup-overlay" id="popup-overlay"></div>
+<div class="popup-window" id="popup-window">
+    <div class="popup-header">Edit Budget</div>
+    <span class="popup-close" id="popup-close">&times;</span>
+    <div class="popup-content">
+        <form method="POST" id="popup-form">
+            {% csrf_token %}
+            <label for="budget_limit">New Budget Limit:</label>
+            <input type="number" name="limit" id="budget_limit" required>
+            <button type="submit">Save</button>
+            <button type="button" id="close-popup">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openPopup(url, title, borderColor) {
+        // Check if the URL is for a redirect
+        const isRedirect = url.includes('manage_budget');
+        if (isRedirect) {
+            // Redirect to the page fully
+            window.location.href = url;
+            return;
+        }
+    
+        // Open the pop-up for editing
+        const popup = document.getElementById('popup-window');
+        popup.style.borderColor = borderColor;
+    
+        const header = document.querySelector('.popup-header');
+        header.textContent = title;
+    
+        document.getElementById('popup-overlay').style.display = 'block';
+        popup.style.display = 'block';
+    
+        // Update the form's action dynamically
+        const form = document.getElementById('popup-form');
+        form.action = url;
+    }
+    
+    // Close the pop-up
+    function closePopup() {
+        document.getElementById('popup-overlay').style.display = 'none';
+        document.getElementById('popup-window').style.display = 'none';
+    }
+    
+    // Attach close events
+    document.getElementById('popup-close').onclick = closePopup;
+    document.getElementById('popup-overlay').onclick = closePopup;
+    
+    // Handle form submission explicitly
+    document.getElementById('popup-form').onsubmit = function (event) {
+        event.preventDefault(); // Prevent the default form submission
+    
+        const form = event.target;
+        const formData = new FormData(form);
+    
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Force a full-page reload to the manage_budget URL
+                    window.location.href = "{% url 'manage_budget' %}";
+                } else {
+                    alert("Error updating the budget. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred. Please try again.");
+            });
+    };
+    </script>
+{% endblock %}

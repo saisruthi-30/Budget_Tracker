@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}Update Profile - Budget Tracker{% endblock %}
+
+{% block style %}
+
+
+.update-profile-container {
+  background-color: #121212; 
+  color: #d6c1ff; 
+  border-radius: 10px;
+  padding: 25px;
+  max-width: 500px; 
+  margin: 50px auto;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+}
+
+.update-profile-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  color: rgb(250, 111, 157);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.messages-container .alert {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+.alert-info {
+  background-color: rgba(78, 191, 216, 0.2); 
+  color: rgb(78, 191, 216);
+}
+
+.alert-success {
+  background-color: rgba(252, 81, 138, 0.2); 
+  color: rgb(252, 81, 138); 
+}
+
+.update-profile-form .form-group {
+  margin-bottom: 20px;
+}
+
+.update-profile-form label {
+  display: block;
+  margin-bottom: 8px;
+  color: rgb(252, 81, 138); 
+  font-weight: bold;
+}
+
+.update-profile-form .form-control {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #2e2e2e; 
+  border-radius: 5px;
+  background-color: #1e1e1e; 
+  color: #ffffff;
+}
+
+.update-profile-form .form-control:focus {
+  outline: none;
+  border-color: rgb(250, 111, 157); 
+  box-shadow: 0 0 8px rgba(250, 111, 157, 0.5);
+}
+
+.update-profile-form .form-buttons {
+  display: flex;
+  justify-content: space-between; 
+  gap: 10px;
+}
+
+.update-profile-form .btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-save {
+  background-color: rgb(78, 191, 216);
+  color: rgb(37, 31, 31);
+  border: none;
+}
+
+.btn-save:hover {
+  background-color: #007bb8; 
+}
+
+.btn-cancel {
+  background-color: rgb(252, 81, 138); 
+  color: #ffffff;
+  border: none;
+  text-align: center;
+}
+
+.btn-cancel:hover {
+  background-color: rgb(220, 50, 100);
+}
+
+
+{% endblock  %}
+
+{% block content %}
+<div class="update-profile-container">
+  <h2 class="update-profile-title">Update Your Profile</h2>
+
+  {% if messages %}
+    <div class="messages-container">
+      {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" class="update-profile-form">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" class="form-control" value="{{ user_detail.user.name }}" required>
+    </div>
+    <div class="form-group">
+      <label for="address">Address:</label>
+      <textarea id="address" name="address" class="form-control">{{ user_detail.address }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="date_of_birth">Date of Birth:</label>
+      <input type="date" id="date_of_birth" name="date_of_birth" class="form-control" value="{{ user_detail.date_of_birth }}">
+    </div>
+    <div class="form-buttons">
+      <button type="submit" class="btn btn-save">Save</button>
+      <a href="{% url 'view_profile' %}" class="btn btn-cancel">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

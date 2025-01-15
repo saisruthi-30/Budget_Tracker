@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Register - Budget Tracker
+{% endblock %}
+
+{% block style %}
+.fbody {
+    font-family: 'Poppins', sans-serif;
+    background-color: #1a1a1a; 
+    color: #f0f0f0; 
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+    padding-top: 60px; 
+  }
+  
+  .fcontainer {
+    background-color: #121212; 
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto; 
+  }
+  
+h1 {
+    font-size: 28px;
+    color: #00bcd4; /* Electric Blue */
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+label {
+    font-size: 16px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+input[type="text"], input[type="email"], input[type="password"], input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 2px solid #333;
+    background-color: #2a2a2a; /* Dark Input Fields */
+    color: #f0f0f0; /* Light Text */
+    font-size: 16px;
+}
+
+input[type="submit"] {
+    background-color: #00bcd4; /* Electric Blue Submit Button */
+    color: #000;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #ff9800; /* Orange Hover Effect */
+}
+
+.form-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.form-footer a {
+    color: #00bcd4; /* Electric Blue Link */
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+.form-footer a:hover {
+    color: #ff9800; /* Orange Hover Effect */
+}
+
+.error {
+    color: #ff9800; /* Orange Error Text */
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+}
+{% endblock %}
+
+{% block content %}
+<div class="fbody">
+<div class="fcontainer">
+    <h1>Create Account</h1>
+    <form action="/auth/register/" method="POST">
+    {% csrf_token %}
+    
+    <!-- Name -->
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+    {% if form.name.errors %}
+        <div class="error">
+        {% for error in form.name.errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Phone -->
+    <label for="phone">Phone Number</label>
+    <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required>
+    {% if form.phone.errors %}
+        <div class="error">
+        {% for error in form.phone.errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Email -->
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+    {% if form.email.errors %}
+        <div class="error">
+        {% for error in form.email.errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Password -->
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" placeholder="Create a password" required>
+    {% if form.password.errors %}
+        <div class="error">
+        {% for error in form.password.errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Confirm Password -->
+    <label for="confirm_password">Confirm Password</label>
+    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+    {% if form.confirm_password.errors %}
+        <div class="error">
+        {% for error in form.confirm_password.errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Submit Button -->
+    <input type="submit" value="Register">
+
+    <div class="form-footer">
+        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+
+    <!-- General Form Errors -->
+    {% if form.errors %}
+        <div class="error">
+        <ul>
+            {% for field in form %}
+            {% for error in field.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            {% endfor %}
+        </ul>
+        </div>
+    {% endif %}
+    </form>
+</div>
+</div>
+{% endblock %}

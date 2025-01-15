@@ -1,0 +1,182 @@
+<html>
+    <head>
+        <title>Update Budget - Budget Tracker</title>
+    </head>
+   
+    <style>
+        .update-form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: #222;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+    
+        .update-h2 {
+            color: #ffd54f;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    
+        .update-form-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+    
+        .update-form-group label {
+            color: #ffd54f;
+            margin-right: 8px;
+            width: 30%;
+            font-size: 16px;
+            font-weight: 600;
+        }
+    
+        .update-form-group select,
+        .update-form-group input {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #ffd54f;
+            padding: 8px;
+            border-radius: 5px;
+            width: 65%;
+            font-size: 16px;
+            font-weight: 400;
+        }
+    
+        .update-auth-button {
+            background-color: #ffd54f;
+            color: #000;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+    
+        .update-auth-button:hover {
+            background-color: #ff9800;
+        }
+    
+        .messages-container {
+            margin: 20px auto;
+            max-width: 80%;
+            text-align: center;
+        }
+    
+        .message-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+    
+        .message-item {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    
+        .message-item.success {
+            background-color: #4caf50;
+            color: white;
+        }
+    
+        .message-item.error {
+            background-color: #f44336;
+            color: white;
+        }
+    
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            margin-top: 15px;
+        }
+    
+        .manage-budget-link a {
+            background-color: #009688;
+            color: #fff;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+        }
+    
+        .manage-budget-link a:hover {
+            background-color: #00796b;
+        }
+    
+        .or-text {
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+    
+<body>
+<div class="update-form-container">
+    <!-- Display messages -->
+    {% if messages %}
+        <ul class="message-list">
+            {% for message in messages %}
+                <li class="message-item {{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="POST" style="display: flex; flex-direction: column; gap: 15px;">  <!-- Reduced gap between form elements -->
+        {% csrf_token %}
+
+        <!-- Current Month (Read-only) -->
+        <div class="update-form-group">
+            <label for="current_month">Current Month:</label>
+            <select id="current_month" name="current_month" readonly>
+                <option value="{{ current_month }}">{{ current_month }}</option>
+            </select>
+        </div>
+
+        <!-- Category Selection -->
+        <div class="update-form-group">
+            <label for="category">Category:</label>
+            <select id="category" name="category" required>
+                <option value="overall">Overall Budget</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Budget Limit Input -->
+        <div class="update-form-group">
+            <label for="limit">Budget Limit (₹):</label>
+            <input type="number" id="limit" name="limit" step="0.01" required>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="update-auth-button">Set Budget</button>
+
+        <div class="or-text">OR</div>
+
+        <!-- Manage Budget Button -->
+        <div class="manage-budget-link">
+            <a href="{% url 'manage_budget' %}" target="blank">Manage Budget</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

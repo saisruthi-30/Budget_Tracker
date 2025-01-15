@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block title %}Add Emi - Budget Tracker{% endblock title %}
+{% block style %}
+.add-emi-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+.page-title {
+    text-align: center;
+    color: #00bcd4;
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+/* Form Styling */
+.add-emi-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #f0f0f0;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #2b2b2b;
+    color: #f0f0f0;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #00bcd4;
+}
+
+.form-group select {
+    cursor: pointer;
+}
+
+.form-group textarea {
+    resize: none;
+}
+
+/* Custom Dates Styling */
+#custom-dates-container,
+#custom-frequency-container {
+    display: none; /* Initially hidden */
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px dashed #00bcd4;
+    border-radius: 5px;
+}
+
+#custom-dates-list input {
+    margin-bottom: 10px;
+}
+
+/* Button Styling */
+.form-actions {
+    text-align: center;
+}
+
+.submit-button {
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #00bcd4;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.submit-button:hover {
+    background-color: #ff9800;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .add-emi-container {
+        padding: 15px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 14px;
+    }
+
+    .submit-button {
+        font-size: 14px;
+    }
+}
+{% endblock %}
+
+{% block content %}
+<div class="add-emi-container">
+    <h2 class="page-title">Add EMI</h2>
+    <form method="POST" class="add-emi-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" name="amount" step="0.01" placeholder="Enter amount" required>
+        </div>
+
+        <div class="form-group">
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" name="start_date" required>
+        </div>
+
+        <div class="form-group">
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date" required>
+        </div>
+
+        <div class="form-group">
+            <label for="frequency">Frequency:</label>
+            <select id="frequency" name="frequency" required onchange="toggleFrequencyFields()">
+                <option value="Daily">Daily</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Custom Frequency">Custom Frequency</option>
+                <option value="Custom Dates">Custom Dates</option>
+            </select>
+        </div>
+
+       
+        <div class="form-group" id="custom-frequency-container">
+            <label for="custom_frequency_days">Custom Frequency (in days):</label>
+            <input type="number" id="custom_frequency_days" name="custom_frequency_days" placeholder="Enter custom frequency in days">
+        </div>
+
+       
+        <div id="custom-dates-container">
+            <label for="custom_dates">Custom Dates:</label>
+            <div id="custom-dates-list">
+                <input type="date" name="custom_dates" class="custom-date-input">
+            </div>
+            <button type="button" onclick="addCustomDate()" style="margin-top: 10px; background-color: #00bcd4; color: #000; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer;">Add Another Date</button>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4" placeholder="Enter description"></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="submit-button">Add EMI</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleFrequencyFields() {
+        const frequency = document.getElementById('frequency').value;
+        const customFrequencyContainer = document.getElementById('custom-frequency-container');
+        const customDatesContainer = document.getElementById('custom-dates-container');
+
+        customFrequencyContainer.style.display = (frequency === 'Custom Frequency') ? 'block' : 'none';
+        customDatesContainer.style.display = (frequency === 'Custom Dates') ? 'block' : 'none';
+
+        // Clear existing custom dates if "Custom Dates" is deselected
+        if (frequency !== 'Custom Dates') {
+            document.querySelectorAll('.custom-date-input').forEach(input => input.remove());
+        }
+    }
+
+    function addCustomDate() {
+        const container = document.getElementById('custom-dates-list');
+        const input = document.createElement('input');
+        input.type = 'date';
+        input.name = 'custom_dates';
+        input.className = 'custom-date-input';
+        container.appendChild(input);
+    }
+
+    // Initialize fields based on frequency
+    document.addEventListener('DOMContentLoaded', function () {
+        toggleFrequencyFields();
+    });
+</script>
+{% endblock %}

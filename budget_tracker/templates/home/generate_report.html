@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Generate Report - Budget Tracker{% endblock %}
+
+{% block style %}
+    
+    .form-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding:50px ;
+      
+        
+        background: linear-gradient(135deg,rgb(3, 8, 24),rgb(31, 42, 75)); /* Gradient background */
+    }
+
+    .generate-form-container {
+        width: 100%;
+        max-width: 420px;  /* Wider width for better readability */
+        padding: 30px;
+        background-color: #2a2a2a;  /* Dark background for form */
+        border-radius: 12px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);  /* Soft shadow for depth */
+        color: #fff;
+        font-family: 'Poppins', sans-serif;  /* Modern font */
+    }
+
+    .generate-h2 {
+        color: #00e5ff;  /* Neon light blue */
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .generate-form-group label {
+        color: #fff;
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+    
+    .generate-form-group select,
+    .generate-form-group input {
+        background-color: #444;  /* Darker background for inputs */
+        color: #fff;
+        border: 1px solid #00e5ff;  /* Neon light blue border */
+        padding: 12px;
+        border-radius: 6px;
+        width: 100%;
+        margin-top: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+    }
+    
+    .generate-form-group select:focus,
+    .generate-form-group input:focus {
+        border-color: #ff9800; /* Orange border on focus */
+        outline: none;
+    }
+
+    .generate-auth-button {
+        background-color: #00e5ff;  /* Neon light blue */
+        color: #000;
+        padding: 14px 22px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        margin-top: 25px;
+        border: none;
+    }
+    
+    .generate-auth-button:hover {
+        background-color: #00bcd4;  /* Darker shade of blue */
+    }
+    
+    .custom-dates-container {
+        display: none;
+        margin-top: 20px;
+    }
+
+    .message-list {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+
+    .message-item {
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+
+    .message-item.error {
+        background-color: #ff5252;  /* Red for errors */
+        color: #fff;
+    }
+    
+    .message-item.success {
+        background-color: #00e676;  /* Green for success */
+        color: #000;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 600px) {
+        .generate-form-container {
+            padding: 20px;
+        }
+        
+        .generate-h2 {
+            font-size: 20px;
+        }
+    }
+{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="generate-form-container">
+        <h2 class="generate-h2">Generate Report</h2>
+
+        <!-- Display messages -->
+        {% if messages %}
+            <ul class="message-list">
+                {% for message in messages %}
+                    <li class="message-item {{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="GET" action="{% url 'generate_report' %}" class="form-container">
+            {% csrf_token %}
+
+            <!-- Time Period Selection -->
+            <div class="generate-form-group">
+                <label for="period">Select Time Period:</label>
+                <select name="period" id="period" class="form-control" required>
+                    <option value="current_month">Current Month</option>
+                    <option value="financial_year">Financial Year</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+
+            <!-- Custom Date Range (Hidden by default) -->
+            <div id="custom-dates" class="custom-dates-container">
+                <div class="generate-form-group">
+                    <label for="start_date">Start Date:</label>
+                    <input type="date" name="start_date" id="start_date" class="form-control">
+                </div>
+
+                <div class="generate-form-group">
+                    <label for="end_date">End Date:</label>
+                    <input type="date" name="end_date" id="end_date" class="form-control">
+                </div>
+            </div>
+            <br>
+
+            <!-- Report Type Selection -->
+            <div class="generate-form-group">
+                <label for="report_type">Select Report Type:</label>
+                <select name="report_type" id="report_type" class="form-control" required>
+                    <option value="income">Income Report</option>
+                    <option value="expense">Expense Report</option>
+                </select>
+            </div>
+
+            <!-- Report Format -->
+            <div class="generate-form-group">
+                <label for="format">Report Format:</label>
+                <select name="format" id="format" class="form-control" required>
+                    <option value="pdf">PDF</option>
+                    <option value="excel">Excel</option>
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="generate-auth-button">Generate Report</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('period').addEventListener('change', function () {
+        document.getElementById('custom-dates').style.display = this.value === 'custom' ? 'block' : 'none';
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Budget Tracker{% endblock %}</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #000;
+            padding: 15px 30px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.7);
+        }
+
+        .nav-logo {
+            color: #00bcd4;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-logo i {
+            margin-right: 8px;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links li {
+            margin: 0 15px;
+            position: relative;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 18px;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ff9800;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background-color: #00e676;
+            left: 0;
+            bottom: -5px;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            top: 30px;
+            left: 0;
+            min-width: 200px;
+            z-index: 1;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-links li:hover .dropdown {
+            display: block;
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 15px 25px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .dropdown a:hover {
+            background-color: #444;
+            color: #ff9800;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auth-buttons .auth-button {
+            background-color: #00bcd4;
+            color: #000;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .auth-buttons .auth-button:hover {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .auth-username {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            color: #f0f0f0;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 5px;
+            background-color: #333;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .auth-username:hover {
+            background-color: #444;
+            transform: scale(1.05);
+        }
+
+        .auth-username i {
+            font-size: 20px;
+            color: #00bcd4;
+        }
+
+        .username-text {
+            color: #fff;
+        }
+
+
+        
+
+        .messages-container {
+            margin: 20px auto;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .messages .message {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .messages .message.success {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .messages .message.error {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .messages .message.warning {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .messages .message.info {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        .container {
+            padding: 0px 30px;
+        }
+
+        /* Pop-up styles */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Darker background for better focus */
+            z-index: 999;
+        }
+        
+        .popup-window {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px; /* Same width as the Manage Budget pop-up */
+            height: auto;
+            max-height: 80vh;
+            background-color: #222;
+            border: 2px solid #00e676; /* Neon green border */
+            border-radius: 8px;
+            z-index: 1000;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .popup-header {
+            color: #a8e6cf;
+            text-align: center;
+            font-size: 1.4rem;
+            margin-top: 0;
+            padding-top: 0;
+            font-weight: 600;
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 24px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .popup-content iframe {
+            width: 100%;
+            height: 60vh; /* Adjusted based on your requirements */
+            border: none;
+        }
+
+      
+        /* Footer Styles */
+        .base-footer {
+            background-color: #121212 !important;
+            color: #a8e6cf !important;
+            padding: 20px 30px !important;
+            text-align: center !important;
+            font-size: 18px !important;
+            margin-top: 50px !important;
+            border-top: 1px solid #333 !important;
+        }
+        
+       
+        .base-footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+      
+        .base-about-us {
+            flex: 1;
+            min-width: 180px;
+            text-align: left;
+        }
+        
+        .base-about-us h4 {
+            color: #00bfff;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        
+        .base-about-us p {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+       
+        .base-contact-quick-links {
+            flex: 2;
+            min-width: 300px;
+            text-align: center;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        
+        .base-contact-form {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .base-contact-form h4 {
+            color: #00bfff;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        
+        .base-contact-form input,
+        .base-contact-form textarea {
+            width: 100% !important;
+            margin-bottom: 10px !important;
+            padding: 8px !important;
+            border: 1px solid #333 !important;
+            border-radius: 5px !important;
+            background-color: #1a1a1a !important;
+            color: #a8e6cf !important;
+        }
+        
+        .base-contact-form button {
+            background-color: #00bfff !important;
+            color: #121212 !important;
+            padding: 10px 18px !important;
+            border: none !important;
+            border-radius: 5px !important;
+            cursor: pointer !important;
+            font-weight: bold !important;
+            transition: background-color 0.3s !important;
+        }
+        
+        .base-quick-links {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .base-quick-links h4 {
+            color: #00bfff;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        
+        .base-quick-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .base-quick-links li {
+            font-size: 16px;
+        }
+        
+        .base-quick-links a {
+            text-decoration: none;
+            color: #a8e6cf;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        
+        
+        .base-newsletter {
+            flex: 1;
+            min-width: 180px;
+            text-align: right;
+        }
+        
+        .base-newsletter h4 {
+            color: #00bfff;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        
+        .base-newsletter p {
+            margin: 0 0 10px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .base-newsletter input {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #1a1a1a;
+            color: #a8e6cf;
+        }
+        
+        .base-newsletter button {
+            background-color: #00bfff;
+            color: #121212;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+       
+        .base-social-media {
+            margin-top: 15px;
+        }
+        
+        .base-social-media a {
+            color: #00bfff;
+            margin: 0 10px;
+            font-size: 22px;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        
+        .base-footer-note {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #777;
+        }
+        
+        
+        .base-footer button:hover {
+            background-color: #ff9800;
+        }
+        
+
+
+        /* Style for notification icon */
+    .notification-icon {
+        
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        font-size: 24px; /* Adjust size as needed */
+    color: #fccc47;
+    }
+
+    .notification-icon:hover {
+        background-color: #444;
+    }
+
+    .notification-icon span {
+        font-weight: bold;
+        color: #f1c40f;
+    }
+
+    .notification-panel {
+        display: none; /* Initially hidden */
+    }
+
+    .notification-panel.show {
+        display: block; /* Show panel when active */
+    }
+
+
+    
+    .notification-count {
+        position: absolute;
+        top: -5px; 
+        right: -10px; 
+        background:rgb(253, 11, 11); 
+        color: #fff; 
+        font-size: 10px; 
+        font-weight: bold;
+        padding: 2px 6px; 
+        border-radius: 50%; 
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); 
+    }
+    
+
+
+    /* Notification Panel Container */
+    .notification-panel {
+        background: #1a1a1a;
+        color: #fff;
+        width: 350px;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+        padding: 20px;
+        font-family: 'Poppins', sans-serif;
+        position: fixed;
+        top: 20%;
+        right: 20px;
+        z-index: 1001;
+        visibility: hidden; /* Hidden by default */
+        opacity: 0; /* Fully transparent */
+        transition: visibility 0s, opacity 0.3s ease, transform 0.3s ease;
+        transform: translateX(100%); /* Slide out of view */
+    }
+    
+    .notification-panel.show {
+        visibility: visible; /* Make visible */
+        opacity: 1; /* Fully opaque */
+        transform: translateX(0); /* Slide into view */
+    }
+    
+
+
+.notification-header {
+    font-size: 18px;
+    color: #00ffff;
+    border-bottom: 1px solid #00ffff;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+
+.notification-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #2a2a2a;
+    padding: 10px; /* Reduced padding */
+    border-radius: 8px;
+    margin-bottom: 8px; /* Reduced gap between notifications */
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 13px; /* Smaller overall font size */
+    word-wrap: break-word;
+
+}
+
+.notification-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+
+.notification-icon {
+    font-size: 18px;
+    color: #00ff00;
+    margin-right: 10px;
+}
+
+
+.notification-item .notification-text {
+    flex-grow: 1;
+    
+    color: #fff; /* White color for better contrast */
+    margin-right: 10px; /* Space between text and close button */
+    
+}
+
+
+.notification-item .notification-time {
+    font-size: 9px;
+    color: #aaa;
+    margin-right: 10px;
+}
+
+
+.notification-close {
+    background: transparent;
+    color: #ff3333;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.notification-close:hover {
+    color: #ff6666;
+}
+
+.notification-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+
+
+.notification-text strong {
+    font-weight: bold;
+    color: #00ffff; /* Highlighted text */
+}
+.notification-text small {
+    color: #ccc; /* Lighter timestamp */
+    font-size: 10px;
+}
+.notification-icon {
+    margin-right: 5px;
+}
+
+
+/* Scrollable Notification Panel */
+.notification-list {
+    max-height: 300px; /* Adjust as needed */
+    overflow-y: auto;
+    padding-right: 10px; /* Avoid content overflow */
+}
+
+.notification-close-panel{
+
+    position: absolute;
+    top: 38px;
+    right: 25px;
+    font-size: 18px;
+    color: #fff;
+    cursor: pointer;
+}
+      
+
+/* Tooltip  Styling */
+
+/* Tooltip container */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        /* Tooltip text */
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 120px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; /* Position the tooltip above the text */
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Tooltip arrow */
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: black transparent transparent transparent;
+        }
+
+        /* Show the tooltip on hover */
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        {% block style %}{% endblock %}
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'home' %}" class="nav-logo">
+            <i class="fab fa-font-awesome"></i> Budget Tracker
+        </a>
+        <ul class="nav-links">
+            <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+            <li>
+                <a href="#"><i class="fas fa-cogs"></i> Finance</a>
+                <div class="dropdown">
+                    <a href="javascript:void(0);" onclick="openPopup('{% url 'income' %}', 'Add Income', '#00e676')">
+                        <i class="fas fa-wallet"></i> Add Income
+                    </a>
+                    <a href="javascript:void(0);" onclick="openPopup('{% url 'expense' %}', 'Add Expense', '#f44336')">
+                        <i class="fas fa-credit-card"></i> Add Expense
+                    </a>
+                    <a href="javascript:void(0);" onclick="openPopup('{% url 'category' %}', 'Add Category', '#2196f3')">
+                        <i class="fas fa-tags"></i> Add Category
+                    </a>
+                    <a href="javascript:void(0);" onclick="openPopup('{% url 'budget' %}', 'Set Your Budget', '#ffd54f')">
+                        <i class="fas fa-chart-line"></i> Update Budget
+                    </a>
+                    
+                    
+                    <a href="{% url 'generate_report' %}"><i class="fas fa-file-alt"></i> Generate Report</a>
+                    <a href="{% url 'view_incomes' %}"><i class="fas fa-list"></i> View Incomes</a>
+                    <a href="{% url 'view_expenses' %}"><i class="fas fa-list"></i> View Expenses</a>
+                </div>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-calculator"></i> EMI</a>
+                <div class="dropdown">
+                    <a href="{% url 'view_emis' %}"><i class="fas fa-list"></i> View All EMIs</a>
+                    <a href="{% url 'add_emi' %}"><i class="fas fa-plus-circle"></i> Add EMI</a>
+                    <a href="{% url 'view_completed_emis' %}"><i class="fa fa-check-circle"></i> View Completed EMIs</a>
+
+                </div>
+            </li>
+            <li><a href="{% url 'dashboard' %}"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+        </ul>
+        <div class="auth-buttons">
+            {% if user.is_authenticated %}
+            <span class="auth-username">
+                <a href="{% url 'view_profile' %}"><i class="fas fa-user-circle tooltip"><div class="tooltip-text">View User Profile </div></i> </a>
+                <span class="username-text">{{ user.username }}</span>
+            </span>
+            <a href="{% url 'logout' %}" class="auth-button" ><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <div class="notification-icon" onclick="toggleNotificationPanel()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-count" id="notification-count">0</span>
+            </div>
+            {% else %}
+                <a href="{% url 'login' %}" class="auth-button" ><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="{% url 'register' %}" class="auth-button"><i class="fas fa-user-plus"></i> Sign Up</a>
+            {% endif %}
+        </div>
+        
+    </nav>
+    
+    <div class="messages-container">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="message {{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div> 
+
+
+    <div id="notification-panel" class="notification-panel">
+        <span class="notification-close-panel" id="notification-close-pane">✖</span>
+        <h3 class="notification-header">Notifications</h3>
+        <ul class="notification-list" id="notification-list">
+            <!-- Notifications dynamically added here -->
+        </ul>
+        
+
+    </div>
+    
+    <!-- Pop-up Overlay -->
+    <div class="popup-overlay" id="popup-overlay"></div>
+
+    <!-- Pop-up Window -->
+    <div class="popup-window" id="popup-window">
+        <div class="popup-header">  
+        </div> 
+        <span class="popup-close" id="popup-close">&times; </span>
+        <div class="popup-content">
+            <iframe id="popup-frame" src=""></iframe>
+        </div>
+    </div>
+   
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+   <footer class="base-footer">
+    <div class="base-footer-content">
+        <!-- About Us Section -->
+        <div class="base-about-us">
+            <h4><i class="fas fa-info-circle"></i> About Us</h4>
+            <p>
+                Budget Tracker helps you manage your finances efficiently, empowering you to track expenses and achieve your goals.
+            </p>
+        </div>
+
+        <!-- Contact Us & Quick Links -->
+        <div class="base-contact-quick-links">
+            <div class="base-contact-form">
+                <h4><i class="fas fa-envelope"></i> Contact Us</h4>
+             <!-- Contact Us Form -->
+             <form action="{% url 'contact_us' %}" method="post">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="message" placeholder="Your Message" rows="2" required></textarea>
+                <button type="submit"><i class="fas fa-paper-plane"></i> Send</button>
+            </form>
+            </div>
+
+            <div class="base-quick-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{% url 'dashboard' %}"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+                    <li><a href="{% url 'generate_report' %}"><i class="fas fa-file-alt"></i> Generate Report</a></li>
+                    <li><a href="{% url 'view_expenses' %}"><i class="fas fa-chart-line"></i> View Expenses</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Newsletter Section -->
+        <div class="base-newsletter">
+            <h4><i class="fas fa-newspaper"></i> Newsletter</h4>
+            <p>Stay updated with the latest financial tips and tools.</p>
+            <form action="{% url 'newsletter' %}" method="post">
+                {% csrf_token %}
+                <input type="email" name="newsletter_email" placeholder="Enter Your Email" required>
+                <button type="submit"><i class="fas fa-paper-plane"></i> Subscribe</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Social Media Links -->
+    <div class="base-social-media">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+    </div>
+
+    <!-- Footer Note -->
+    <div class="base-footer-note">
+        &copy; 2024 Budget Tracker. All rights reserved.
+    </div>
+</footer>
+
+
+
+    
+     
+ 
+    
+
+<script>
+    // Get elements 
+      const popupOverlay = document.getElementById("popup-overlay");
+      const popupWindow = document.getElementById("popup-window");
+      const popupFrame = document.getElementById("popup-frame");
+      const popupHeader = document.querySelector(".popup-header");
+      const popupClose = document.getElementById("popup-close");
+    
+    // Function to open the pop-up
+    function openPopup(url, headerText, borderColor) {
+        popupFrame.src = url;
+        popupHeader.innerText = headerText; // Dynamically update the header
+        popupOverlay.style.display = "block";
+        popupWindow.style.display = "block";
+        popupWindow.style.borderColor = borderColor; // Set dynamic border color
+    }
+
+  
+
+    
+    // Function to close the pop-up
+    function closePopup() {
+        popupOverlay.style.display = "none";
+        popupWindow.style.display = "none";
+        popupFrame.src = ""; // Clear iframe content
+    }
+    
+    // Close pop-up on close button or overlay click
+    popupClose.addEventListener("click", closePopup);
+    popupOverlay.addEventListener("click", closePopup);
+    
+    // Optional: Handle ESC key to close the pop-up
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            closePopup();
+        }
+    });
+
+    // Function to fetch notifications via AJAX
+
+      // Toggle notification panel visibility
+      function toggleNotificationPanel() {
+        const panel = document.getElementById('notification-panel');
+        if (panel.classList.contains('show')) {
+            panel.classList.remove('show');
+            document.removeEventListener('click', handleClickOutsidePanel);
+        } else {
+            panel.classList.add('show');
+            document.addEventListener('click', handleClickOutsidePanel);
+        }
+    }
+
+// Close the panel when clicking outside
+function handleClickOutsidePanel(event) {
+    const panel = document.getElementById('notification-panel');
+    if (!panel.contains(event.target) && !event.target.closest('.notification-icon')) {
+        panel.classList.remove('show');
+        document.removeEventListener('click', handleClickOutsidePanel);
+    }
+}
+
+
+const MAX_NOTIFICATIONS = 5;
+
+function fetchNotifications() {
+    fetch('/fetch-notifications/')
+        .then(response => response.json())
+        .then(data => {
+            const notificationList = document.getElementById('notification-list');
+            const notificationCount = document.getElementById('notification-count');
+
+            // Clear current notifications
+            notificationList.innerHTML = '';
+
+            // Add only the latest MAX_NOTIFICATIONS notifications
+            const recentNotifications = data.notifications.slice(0, MAX_NOTIFICATIONS);
+            recentNotifications.forEach(notification => {
+                const li = document.createElement('li');
+                li.classList.add('notification-item', notification.message_type); 
+                li.innerHTML = `
+                    <div class="notification-text">
+                        <i class="fas fa-info-circle notification-icon"></i>
+                        <strong>${notification.message}</strong>
+                        <br>
+                        <small class="notification-time">${notification.created_at}</small>
+                    </div>
+                    {% comment %} <button class="notification-close">✖</button> {% endcomment %}
+                `;
+                notificationList.appendChild(li);
+            });
+
+            // Update notification count
+            notificationCount.textContent = data.notification_count;
+        });
+} 
+
+
+    // Function to mark notifications as read
+    function markNotificationsRead() {
+        fetch('/mark-notifications-read/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') // CSRF token for POST request
+            },
+            body: JSON.stringify({})
+        });
+    }
+
+    // Function to get CSRF token
+    function getCookie(name) {
+        const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return cookieValue ? cookieValue.pop() : '';
+    }
+
+    // Fetch notifications every 1 seconds
+    setInterval(fetchNotifications, 1000);
+
+    
+
+
+    document.getElementById('notification-close-pane').addEventListener('click', () => {
+        const panel = document.getElementById('notification-panel');
+        panel.classList.remove('show');
+    });
+    
+
+    
+
+</script>    
+
+</body>
+</html>

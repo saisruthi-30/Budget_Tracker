@@ -1,0 +1,571 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Budget Tracker{% endblock title %}
+
+{% block style %}
+
+
+
+
+.report-heading {
+    color:rgb(221, 245, 245); 
+    font-family: 'Poppins', sans-serif; 
+    font-size: 2rem; 
+    text-align: center; 
+    margin-bottom: 20px;
+    text-shadow: 0px 0px 10pxrgb(226, 231, 231); 
+   
+}
+
+
+.category-income-container, .line-chart-container {
+    max-width: 800px;
+    margin: auto;
+    height: 500px;
+    position: relative;
+}
+
+#incomeCategoryChart {
+    max-width: 410px; 
+    height: 400px;    
+    margin: 10px auto;   
+}
+
+#incomeExpenseLineChart {
+    max-width: 400px; 
+    height: 400px;   
+    margin: 10px auto;  
+}
+
+#incomePieChart{
+    max-width: 370px;
+    height: 270px;
+    margin: 10px auto;
+}
+
+
+
+#financialLineChart {
+    max-width: 400px;
+    height: 400px;
+    margin: 10px auto;
+}
+
+#categoryBarChart {
+    max-width: 470px;
+    height: 400px; 
+    margin: 10px auto;
+}
+
+
+
+#overallPieChart{
+    max-width: 370px;
+    height: 270px;
+    margin: 0 auto;
+
+}
+   
+
+/* Flexbox container for responsive alignment */
+.category-budget-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; 
+    gap: 20px; 
+    padding: 20px;
+}
+
+/* Individual budget card with neon highlights */
+.budget-card {
+    flex: 1 1 250px; 
+    max-width: 190px;
+    text-align: center;
+    background: #1f1f1f;
+   
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    transition: transform 0.3s;
+    color: #f0f0f0; 
+}
+
+.budget-card:hover {
+    transform: scale(1.05); 
+}
+
+
+.budget-card h4 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #00bcd4;
+}
+
+
+.budget-card canvas {
+    margin: 10px auto;
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Overbudget text styling */
+.budget-card p.overbudget {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #ff9800; 
+    font-weight: bold;
+}
+
+/* Filter Form */
+form {
+    margin: 20px 0;
+    text-align: center;
+}
+
+form label {
+    margin-right: 10px;
+    color: #00bcd4; 
+}
+
+form select,
+form input[type="date"],
+form button {
+    background-color: #333;
+    color: #f0f0f0;
+    border: 1px solid #00bcd4;
+    padding: 8px 15px;
+    border-radius: 5px;
+}
+
+form button {
+    background-color: #00bcd4;
+    color: #121212; 
+}
+
+form button:hover {
+    background-color: #00e676; 
+}
+
+/* Financial Summary Cards */
+.summary-card {
+    background: linear-gradient(135deg, #00bcd4, #00e676); 
+    border-radius: 10px;
+    padding: 20px;
+    width: 30%;
+    color: #f0f0f0; /* Light text color */
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.summary-card h4 {
+    font-size: 18px;
+}
+
+.summary-card p {
+    font-size: 24px;
+}
+
+/* Overall Budget Progress */
+.budget-progress {
+    margin: 40px 0;
+    text-align: center;
+}
+
+.budget-progress h3 {
+    color: #00bcd4;
+}
+
+.budget-progress .progress-bar {
+    background: #f3f3f3;
+    border-radius: 10px;
+    width: 80%;
+    margin: 0 auto;
+    overflow: hidden;
+    height: 30px;
+}
+
+.budget-progress .progress-bar div {
+    background: linear-gradient(90deg, #ff4500, #ff6347);
+    height: 100%;
+    color: #f0f0f0;
+    line-height: 30px;
+    text-align: center;
+}
+
+/* Visualizations */
+.visualizations {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.visualizations .chart-container {
+    flex: 1;
+    min-width: 300px;
+    margin: 20px;
+}
+
+.chart-container h3 {
+    margin-bottom: 20px;
+}
+
+
+.pie-chart-container {
+    background: #1f1f1f;
+    border-radius: 10px;
+    padding: 20px;
+    width: 30%;
+    color: #f0f0f0;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.pie-chart-container h3 {
+    color: #00bcd4;
+}
+
+
+/* Progress Bar Container */
+.progress-bar-container {
+    background: #1f1f1f; 
+    border-radius: 15px;
+    overflow: hidden; 
+    width: 80%;
+    margin: 0 auto;
+    height: 35px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); 
+}
+
+/* Animated Gradient Progress Bar */
+.progress-bar {
+    background: linear-gradient(90deg,rgb(248, 59, 59),rgb(250, 112, 58),rgb(241, 26, 19)); /* Vibrant gradient */
+    height: 100%;
+    line-height: 35px;
+    text-align: center;
+    color: white; 
+    font-weight: bold;
+    border-radius: 15px 0 0 15px;
+    transition: width 1s ease-in-out;
+}
+
+
+
+form label {
+    color: #00FFFF; /* Neon cyan for the label */
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px; /* Slightly larger font */
+}
+
+form select,
+form input[type="date"],
+form button {
+    background-color: #1f1f1f; 
+    color: #00FFFF; 
+    border: 2px solid #00FFFF; 
+    padding: 10px 15px; 
+    font-size: 16px; 
+    border-radius: 8px; 
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease-in-out;
+}
+
+form select:focus,
+form input[type="date"]:focus {
+    outline: none;
+    box-shadow: 0px 0px 8px #00FFFF; 
+}
+
+form button {
+    background-color: #00FFFF;
+    color: #1f1f1f; 
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px 20px;
+}
+
+form button:hover {
+    background-color: #00e676;
+    box-shadow: 0px 0px 10px #00e676; 
+}
+
+
+    
+    {% endblock %}
+    
+
+{% block content %}
+<div style="text-align: center; padding: 10px 0;">
+    <h2 style="color: #00FFFF; font-family: 'Poppins', sans-serif; font-size: 36px;">Dashboard</h2>
+</div>
+
+<!-- Filter Form -->
+<div style="margin: 30px 0; text-align: center;">
+    <form method="GET" action="{% url 'dashboard' %}" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+        <label for="filter_type" style="margin: 0;">View by :</label>
+        <select name="filter_type" id="filter_type">
+            <option value="current_month" {% if filter_type == 'current_month' %}selected{% endif %}>Current Month</option>
+            <option value="yearly" {% if filter_type == 'yearly' %}selected{% endif %}>Yearly</option>
+            <option value="custom" {% if filter_type == 'custom' %}selected{% endif %}>Custom Range</option>
+        </select>
+        <span id="custom-dates" style="{% if filter_type != 'custom' %}display: none;{% endif %}">
+            <input type="date" name="start_date" value="{{ start_date }}">
+            <input type="date" name="end_date" value="{{ end_date }}">
+        </span>
+        <button type="submit">Apply</button>
+    </form>
+</div>
+
+
+
+<!-- Financial Summary Cards -->
+<div style="display: flex; justify-content: space-around; margin: 20px 0;">
+    <div style="background: linear-gradient(135deg, #00FFFF, #00BFFF); border-radius: 10px; padding: 20px; width: 30%; color: white; text-align: center; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h4>Total Income</h4>
+        <p style="font-size: 24px;">₹{{ total_income }}</p>
+    </div>
+    <div style="background: linear-gradient(135deg, #FF4500, #FF6347); border-radius: 10px; padding: 20px; width: 30%; color: white; text-align: center; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h4>Total Expenses</h4>
+        <p style="font-size: 24px;">₹{{ total_expenses }}</p>
+    </div>
+    <div style="background: linear-gradient(135deg, #32CD32, #98FB98); border-radius: 10px; padding: 20px; width: 30%; color: white; text-align: center; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h4>Balance</h4>
+        <p style="font-size: 24px;">₹{{ balance }}</p>
+    </div>
+</div>
+
+<!-- Overall Budget Progress -->
+{% comment %} <div style="margin: 40px 0; text-align: center;">
+    <h3 style="color: #00FFFF; font-family: 'Poppins', sans-serif;">Overall Budget Usage</h3>
+    <div class="progress-bar-container">
+        <div class="progress-bar" style="width: {{ overall_budget_progress }}%;">
+            {{ overall_budget_progress }}%
+        </div>
+    </div>
+    <p style="margin-top: 10px;">₹{{ overall_budget_used }} used of ₹{{ overall_budget }}</p>
+</div> {% endcomment %}
+
+<h1 class="report-heading" style="color:#f55142;">Expense Report Summary</h1>
+
+<!-- Visualizations -->
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-evenly; gap: 30px; margin-top: 40px;">
+    {% comment %} <div style="flex: 1; min-width: 300px;">
+        <h3 style="color: #00FFFF; text-align: center;">Income vs Expenses vs Balance</h3>
+        <canvas id="financialLineChart" ></canvas>
+    </div> {% endcomment %}
+
+    <div style="flex: 1; min-width: 300px;">
+        <h3 style="color: #00FFFF; text-align: center;">Category-wise Expenses</h3>
+        <canvas id="categoryBarChart" ></canvas>
+    </div>
+
+    <div style="flex: 1; min-width: 300px;">
+        <h3 style="color: #00FFFF; text-align: center;">Overall Income vs Expenses vs Balance</h3>
+        <canvas id="overallPieChart" ></canvas>
+    </div>
+</div>
+
+{% comment %} <!-- Pie Charts for Each Category -->
+<div class="category-budget-container">
+    <h3 style="color: #00FFFF; text-align: center; width: 100%; font-family: 'Poppins', sans-serif;">Category-wise Budget Usage</h3>
+    {% for budget in category_budget_data %}
+    <div class="budget-card">
+        <h4>{{ budget.category }}</h4>
+        <canvas id="budgetPieChart_{{ forloop.counter }}"></canvas>
+        {% if budget.overbudget %} 
+            <p class="overbudget">This category is overbudget by ₹{{ budget.overbudget }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div> {% endcomment %}
+
+<!-- Visualizations: Income by Category, Income and Expense Trend, Income Breakdown by Category -->
+<h1 class="report-heading" style="color:#64fa4d;">Income Report Summary</h1>
+<div class="visualizations">
+    <div class="chart-container">
+        <h3 style="color: #00FFFF; text-align: center;">Income by Category</h3>
+        <canvas id="incomeCategoryChart"></canvas>
+    </div>
+
+    {% comment %} <div class="chart-container">
+        <h3 style="color: #00FFFF; text-align: center;">Income and Expense Trend</h3>
+        <canvas id="incomeExpenseLineChart"></canvas>
+    </div> {% endcomment %}
+
+    <div class="chart-container">
+        <h3 style="color: #00FFFF; text-align: center;">Income Breakdown by Category</h3>
+        <canvas id="incomePieChart"></canvas>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <script>
+    // Pie Charts for Each Category
+    {% comment %} {% for budget in category_budget_data %}
+    const pieCtx{{ forloop.counter }} = document.getElementById('budgetPieChart_{{ forloop.counter }}').getContext('2d');
+    const isOverBudget{{ forloop.counter }} = {{ budget.used_budget }} > {{ budget.allocated_budget }};
+    new Chart(pieCtx{{ forloop.counter }}, {
+        type: 'pie',
+        data: {
+            labels: isOverBudget{{ forloop.counter }}
+                ? ['Overbudget', 'Allocated']
+                : ['Used', 'Remaining'],
+            datasets: [{
+                data: isOverBudget{{ forloop.counter }}
+                    ? [{{ budget.overbudget }}, {{ budget.allocated_budget }}]
+                    : [{{ budget.used_budget }}, {{ budget.allocated_budget }} - {{ budget.used_budget }}],
+                backgroundColor: isOverBudget{{ forloop.counter }}
+                    ? ['#e83838', '#36A2EB'] // Red for overbudget
+                    : ['#FF6384', '#36A2EB'] // Default colors
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ₹${context.raw.toFixed(2)}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+    {% endfor %} {% endcomment %}
+
+    {% comment %} // Line Chart: Income vs Expenses vs Balance
+    const lineCtx = document.getElementById('financialLineChart').getContext('2d');
+    new Chart(lineCtx, {
+        type: 'line',
+        data: {
+            labels: {{ line_labels|safe }},
+            datasets: [
+                { label: 'Income', data: {{ income_data|safe }}, borderColor: '#00FF00', fill: false, tension: 0.1 },
+                { label: 'Expenses', data: {{ expense_data|safe }}, borderColor: '#FF0000', fill: false, tension: 0.1 },
+                { label: 'Balance', data: {{ balance_data|safe }}, borderColor: '#0000FF', fill: false, tension: 0.1 }
+            ]
+        },
+        options: { responsive: true }
+    }); {% endcomment %}
+
+    // Bar Chart: Category-wise Expenses
+    const barCtx = document.getElementById('categoryBarChart').getContext('2d');
+    new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ bar_labels|safe }},
+            datasets: [{ label: 'Expenses', data: {{ bar_data|safe }}, backgroundColor: '#36A2EB' }]
+        },
+        options: { responsive: true }
+    });
+
+    // Pie Chart: Overall Income, Expenses, and Balance
+    const overallPieCtx = document.getElementById('overallPieChart').getContext('2d');
+    new Chart(overallPieCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Income', 'Expenses', 'Balance'],
+            datasets: [
+                {
+                    data: [{{ total_income }}, {{ total_expenses }}, {{ balance }}],
+                    backgroundColor: ['#36A2EB', '#FF6384', '#4BC0C0']
+                }
+            ]
+        },
+        options: { responsive: true }
+    });
+
+
+     // Income Category Bar Chart
+     var ctx3 = document.getElementById('incomeCategoryChart').getContext('2d');
+     var incomeCategoryChart = new Chart(ctx3, {
+         type: 'bar',
+         data: {
+             labels: {{ income_bar_labels|safe }},
+             datasets: [{
+                 label: 'Income by Category',
+                 data: {{ income_bar_data|safe }},
+                 backgroundColor: '#00bcd4',
+                 borderColor: '#00bcd4',
+                 borderWidth: 1
+             }]
+         },
+         options: {
+             responsive: true,
+             scales: {
+                 y: {
+                     beginAtZero: true
+                 }
+             }
+         }
+     });
+
+     {% comment %} LINE CHART  {% endcomment %}
+     {% comment %} var ctx1 = document.getElementById('incomeExpenseLineChart').getContext('2d');
+    var incomeExpenseLineChart = new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: {{ line_labels|safe }},
+            datasets: [{
+                label: 'Income',
+                data: {{ income_data|safe }},
+                borderColor: '#4caf50',
+                backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                borderWidth: 2,
+                fill: true
+            }, {
+                label: 'Expense',
+                data: {{ expense_data|safe }},
+                borderColor: '#f44336',
+                backgroundColor: 'rgba(244, 67, 54, 0.2)',
+                borderWidth: 2,
+                fill: true
+            }, {
+                label: 'Balance',
+                data: {{ balance_data|safe }},
+                borderColor: '#2196f3',
+                backgroundColor: 'rgba(33, 150, 243, 0.2)',
+                borderWidth: 2,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
+    });
+    {% endcomment %}
+    {% comment %} <!-- Income Breakdown by Category (Pie Chart) --> {% endcomment %}
+     
+    var ctx2 = document.getElementById('incomePieChart').getContext('2d');
+    var incomePieChart = new Chart(ctx2, {
+        type: 'pie',
+        data: {
+            labels: {{ pie_labels|safe }},
+            datasets: [{
+                label: 'Income by Category',
+                data: {{ pie_data|safe }},
+                backgroundColor: ['#ffeb3b', '#2196f3', '#f44336', '#4caf50'], 
+                borderColor: '#fff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
+    }); 
+</script>
+{% endblock %}

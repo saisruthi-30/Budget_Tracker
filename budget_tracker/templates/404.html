@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}404 - Budget Tracker{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 50px;">
+    <h1 style="font-size: 72px; color: #FF6347;">404</h1>
+    <p style="font-size: 24px; color: #777;">Oops! The page you're looking for doesn't exist.</p>
+    <a href="{% url 'home' %}" style="padding: 10px 20px; background: #00BFFF; color: white; text-decoration: none; border-radius: 5px;">
+        Go Back Home
+    </a>
+</div>
+{% endblock %}

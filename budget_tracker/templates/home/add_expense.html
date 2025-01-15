@@ -1,0 +1,182 @@
+
+<html>
+    <head>
+        <title>Add Expense - Budget Tracker</title>
+    </head>
+    
+<style>
+    /* Global Styles */
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color:rgba(39, 37, 37, 0.5);
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .messages-container {
+        margin: 20px auto;
+        max-width: 80%;
+        text-align: center;
+    }
+
+    .messages {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .messages .message {
+        margin: 10px 0;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 500;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .messages .message.success {
+        background-color: #4caf50;
+        color: white;
+    }
+
+    .messages .message.error {
+        background-color: #f44336;
+        color: white;
+    }
+
+    .messages .message.warning {
+        background-color: #ff9800;
+        color: white;
+    }
+
+    .messages .message.info {
+        background-color: #2196f3;
+        color: white;
+    }
+
+    .form-container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 25px;
+        background-color: #222;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-content {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .form-group {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .form-label {
+        color: #e0e0e0;
+        font-size: 16px;
+        font-weight: 500;
+        margin-right: 15px;
+        width: 120px;
+    }
+
+    .form-input,
+    .form-select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 2px solid #ff6b6b;
+        background-color: #333; /* Input field background color */
+        color: white;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+        border-color: #f08080;
+        outline: none;
+    }
+
+    .submit-button {
+        width: 100%; /* Ensure button takes full width of the form */
+        padding: 12px 0; /* Reduced vertical padding */
+        font-size: 18px; /* Increased font size */
+        font-weight: 600;
+        background-color: #f08080;
+        color: #333;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        align-self: center;
+    }
+
+    .submit-button:hover {
+        background-color: #ff6b6b;
+        transform: translateY(-2px);
+    }
+    
+    .submit-button:active {
+        transform: translateY(0);
+    }
+</style>
+    <body>
+
+
+
+<div class="messages-container">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li class="message {{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+
+<div class="form-container">
+    <form method="post" class="form-content">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="amount" class="form-label">Amount:</label>
+            <input type="number" step="0.01" name="amount" required class="form-input">
+        </div>
+
+        <div class="form-group">
+            <label for="date" class="form-label">Date:</label>
+            <input type="date" name="date" required class="form-input">
+        </div>
+
+        <div class="form-group">
+            <label for="description" class="form-label">Description:</label>
+            <input type="text" name="description" placeholder="Optional" class="form-input">
+        </div>
+
+        <div class="form-group">
+            <label for="category" class="form-label">Category:</label>
+            <select name="category" required class="form-select">
+                <option value="">Select Category</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="submit-button" style="background-color: #f08080; color: #000; padding: 12px 0; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; text-align: center; transition: background-color 0.3s ease;">
+            Save Expense
+        </button>
+        
+    </form>
+</div>
+
+    </body>
+
+
+</html>
